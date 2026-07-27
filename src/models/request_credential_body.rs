@@ -1,17 +1,17 @@
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestCredentialBody {
-  issuer_did: String,
-  holder_pid: String,
-  credentials: Vec<CredentialQuery>,
+  pub issuer_did: String,
+  pub holder_pid: String,
+  pub credentials: Vec<CredentialQuery>,
 }
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CredentialQuery {
-  format: CredentialFormat,
-  r#type: String,
-  id: String,
+  pub format: CredentialFormat,
+  pub r#type: String,
+  pub id: String,
 }
 
 #[derive(Debug, serde::Serialize)]

@@ -1,6 +1,7 @@
 mod errors;
 pub mod models;
 
+use crate::models::RequestCredentialInformation;
 pub use errors::*;
 use std::fmt::Display;
 
@@ -104,7 +105,7 @@ impl IdentityHubClient {
     }
   }
 
-  pub async fn request_a_credential(
+  pub async fn request_verifiable_credential(
     &self,
     participant_id: &str,
     request_credential_body: &models::RequestCredentialBody,
@@ -128,5 +129,26 @@ impl IdentityHubClient {
     } else {
       Err(IdentityHubClientError::Response(response))
     }
+  }
+
+  pub async fn get_request_verifiable_credential_status(
+    &self,
+    participant_id: &str,
+    holder_pid: &str,
+  ) -> Result<RequestCredentialInformation> {
+    let url = format!(
+      "{}/api/identity/{}/participants/{participant_id}/credentials/request/{holder_pid}",
+      self.endpoint, self.version
+    );
+
+    let request_builder = self.client.get(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    Ok(request_builder.send().await?.json().await?)
   }
 }
