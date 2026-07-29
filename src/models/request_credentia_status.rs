@@ -3,7 +3,7 @@
 pub struct RequestCredentialInformation {
   pub issuer_did: String,
   pub holder_pid: String,
-  pub issuer_pid: String,
+  pub issuer_pid: Option<String>,
   pub status: RequestCredentialState,
 }
 

@@ -1,8 +1,10 @@
 mod errors;
+mod issuer_service_client;
 pub mod models;
 
-use crate::models::RequestCredentialInformation;
+use crate::models::{DidWeb, RequestCredentialInformation};
 pub use errors::*;
+pub use issuer_service_client::IssuerServiceClient;
 use std::fmt::Display;
 
 pub enum IdentityHubClientVersion {
@@ -37,6 +39,17 @@ impl IdentityHubClient {
       bearer_token,
       version,
     }
+  }
+
+  pub async fn get_identity(
+    client: reqwest::Client,
+    participant: DidWeb,
+  ) -> Result<models::Identity> {
+    let request_builder = client.get(participant.url());
+
+    let response = request_builder.send().await?;
+
+    Ok(response.json().await?)
   }
 
   pub async fn get_credentials(&self, participant_id: &str) -> Result<Vec<models::Credential>> {
