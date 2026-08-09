@@ -1,8 +1,10 @@
+mod dataspace_service_client;
 mod errors;
 mod issuer_service_client;
 pub mod models;
 
 use crate::models::{DidWeb, RequestCredentialInformation};
+pub use dataspace_service_client::DataspaceServiceClient;
 pub use errors::*;
 pub use issuer_service_client::IssuerServiceClient;
 use std::fmt::Display;

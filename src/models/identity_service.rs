@@ -1,4 +1,4 @@
-use crate::IssuerServiceClient;
+use crate::{DataspaceServiceClient, IssuerServiceClient};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -13,6 +13,14 @@ impl IdentityService {
   pub fn get_issuer_service_client(&self) -> Option<IssuerServiceClient> {
     if self.r#type == "IssuerService" {
       Some(IssuerServiceClient::new(self.service_endpoint.clone()))
+    } else {
+      None
+    }
+  }
+
+  pub fn get_dataspace_service_client(&self) -> Option<DataspaceServiceClient> {
+    if self.r#type == "DataService" {
+      DataspaceServiceClient::new(self.service_endpoint.clone())
     } else {
       None
     }
