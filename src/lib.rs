@@ -3,7 +3,7 @@ mod errors;
 mod issuer_service_client;
 pub mod models;
 
-use crate::models::{DidWeb, RequestCredentialInformation};
+use crate::models::{DidWeb, Participant, ParticipantContext, RequestCredentialInformation};
 pub use dataspace_service_client::DataspaceServiceClient;
 pub use errors::*;
 pub use issuer_service_client::IssuerServiceClient;
@@ -54,6 +54,120 @@ impl IdentityHubClient {
     Ok(response.json().await?)
   }
 
+  pub async fn create_participant(&self, participant_context: &ParticipantContext) -> Result<()> {
+    let url = format!(
+      "{}/api/identity/{}/participants",
+      self.endpoint, self.version
+    );
+    let request_builder = self.client.post(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    let response = request_builder.json(&participant_context).send().await?;
+
+    if response.status().is_success() {
+      Ok(())
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
+  }
+
+  pub async fn get_participants(&self, offset: usize, limit: usize) -> Result<Vec<Participant>> {
+    let url = format!(
+      "{}/api/identity/{}/participants?offset={offset}&limit={limit}",
+      self.endpoint, self.version
+    );
+    let request_builder = self.client.get(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    let response = request_builder.send().await?;
+
+    if response.status().is_success() {
+      Ok(response.json().await?)
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
+  }
+
+  pub async fn get_participant(&self, participant_context_id: &str) -> Result<Participant> {
+    let url = format!(
+      "{}/api/identity/{}/participants/{participant_context_id}",
+      self.endpoint, self.version
+    );
+    let request_builder = self.client.get(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    let response = request_builder.send().await?;
+
+    if response.status().is_success() {
+      Ok(response.json().await?)
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
+  }
+
+  pub async fn activate_participant(
+    &self,
+    participant_context_id: &str,
+    is_active: bool,
+  ) -> Result<()> {
+    let url = format!(
+      "{}/api/identity/{}/participants/{participant_context_id}/state?isActive={is_active}",
+      self.endpoint, self.version
+    );
+    let request_builder = self.client.post(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    let response = request_builder.send().await?;
+
+    if response.status().is_success() {
+      Ok(())
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
+  }
+
+  pub async fn delete_participant(&self, participant_context_id: &str) -> Result<Participant> {
+    let url = format!(
+      "{}/api/identity/{}/participants/{participant_context_id}",
+      self.endpoint, self.version
+    );
+    let request_builder = self.client.delete(&url);
+
+    let request_builder = if let Some(bearer_token) = &self.bearer_token {
+      request_builder.header("Authorization", format!("Bearer {bearer_token}"))
+    } else {
+      request_builder
+    };
+
+    let response = request_builder.send().await?;
+
+    if response.status().is_success() {
+      Ok(response.json().await?)
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
+  }
+
   pub async fn get_credentials(&self, participant_id: &str) -> Result<Vec<models::Credential>> {
     let url = format!(
       "{}/api/identity/{}/participants/{participant_id}/credentials",
@@ -69,7 +183,11 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    Ok(response.json().await?)
+    if response.status().is_success() {
+      Ok(response.json().await?)
+    } else {
+      Err(IdentityHubClientError::Response(response))
+    }
   }
 
   pub async fn get_credential(

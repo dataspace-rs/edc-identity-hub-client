@@ -1,12 +1,14 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, serde::ts_milliseconds};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Credential {
   pub id: String,
-  pub created_at: u64,
-  pub timestamp: u64,
+  #[serde(with = "ts_milliseconds")]
+  pub created_at: DateTime<Utc>,
+  #[serde(with = "ts_milliseconds")]
+  pub timestamp: DateTime<Utc>,
   pub issuer_id: String,
   pub holder_id: String,
   pub verifiable_credential: VerifiableCredential,

@@ -1,6 +1,9 @@
-pub struct DidWeb {
-  url: String,
-}
+use serde::de::{Error, Visitor};
+use serde::{Deserialize, Deserializer};
+use std::fmt;
+
+#[derive(Clone, Debug)]
+pub struct DidWeb(String);
 
 impl DidWeb {
   pub fn new(url: &str) -> Option<Self> {
@@ -20,11 +23,36 @@ impl DidWeb {
 
     let url = urlencoding::decode(&url).ok()?.to_string();
 
-    Some(Self { url })
+    Some(Self(url))
   }
 
   pub fn url(&self) -> &str {
-    &self.url
+    &self.0
+  }
+}
+
+struct DidWebVisitor;
+impl<'de> Visitor<'de> for DidWebVisitor {
+  type Value = DidWeb;
+
+  fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+    formatter.write_str("a DID Web")
+  }
+
+  fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+  where
+    E: Error,
+  {
+    DidWeb::new(value).ok_or_else(|| Error::custom(format!("invalid DID Web '{value}'")))
+  }
+}
+
+impl<'de> Deserialize<'de> for DidWeb {
+  fn deserialize<D>(deserializer: D) -> Result<DidWeb, D::Error>
+  where
+    D: Deserializer<'de>,
+  {
+    deserializer.deserialize_str(DidWebVisitor)
   }
 }
 

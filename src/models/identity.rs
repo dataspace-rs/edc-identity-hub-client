@@ -1,4 +1,4 @@
-use super::IdentityService;
+use super::{IdentityService, IdentityServiceType};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -9,7 +9,7 @@ pub struct Identity {
 }
 
 impl Identity {
-  pub fn get_identity_services(&self, r#type: &str) -> Vec<&IdentityService> {
+  pub fn get_identity_services(&self, r#type: IdentityServiceType) -> Vec<&IdentityService> {
     self
       .services
       .iter()
