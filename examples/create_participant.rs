@@ -16,13 +16,13 @@ struct Args {
     default_value = "https://identity-hub.participant-li1.demo.luminvent.com"
   )]
   endpoint: String,
-  /// Endpoint of the OpenID endpoint
+  /// Endpoint of the OpenID Token endpoint
   #[arg(
     short,
     long,
-    default_value = "https://sso.participant-li1.demo.luminvent.com/realms/connector-a/protocol/openid-connect/token"
+    default_value = "https://sso.dataspace.luminvent.com/realms/connector-a/protocol/openid-connect/token"
   )]
-  openid_configuration_endpoint: String,
+  openid_token_endpoint: String,
   /// Endpoint of the OpenID endpoint
   #[arg(short, long, default_value = "http://vault:8200")]
   vault_url: String,
@@ -72,7 +72,7 @@ async fn main() -> Result<()> {
     scope: args.scopes,
   };
 
-  let token = get_authentication_token(&args.openid_configuration_endpoint, &query_body)
+  let token = get_authentication_token(&args.openid_token_endpoint, &query_body)
     .await
     .expect("Could not authenticate client");
 
@@ -162,13 +162,13 @@ struct QueryBody {
 }
 
 async fn get_authentication_token(
-  openid_configuration_endpoint: &str,
+  openid_token_endpoint: &str,
   query_body: &QueryBody,
 ) -> Option<String> {
   let client = reqwest::Client::new();
 
   let response = client
-    .post(openid_configuration_endpoint)
+    .post(openid_token_endpoint)
     .form(&query_body)
     .send()
     .await
@@ -185,6 +185,9 @@ async fn get_authentication_token(
       .ok()
       .map(|token_response| token_response.access_token)
   } else {
+    println!("{:?}", response);
+    println!("{}", response.text().await.unwrap_or_default());
+
     None
   }
 }
