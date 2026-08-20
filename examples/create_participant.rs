@@ -122,7 +122,7 @@ async fn main() -> Result<()> {
         "credentials": {
           "clientId": args.issue_client_id,
           "clientSecret": args.issue_client_secret,
-          "tokenUrl": args.openid_configuration_endpoint
+          "tokenUrl": args.openid_token_endpoint
         },
         "config": {
           "secretPath": "v1/participants",
