@@ -32,8 +32,10 @@ impl DataspaceServiceClient {
   pub async fn get_first_service_endpoint(&self) -> Option<String> {
     let protocol_versions = self.get_protocol_versions().await.ok()?;
 
-    protocol_versions.first().map(|protocol_version|
-      self.service_endpoint.replace("/.well-known/dspace-version", &protocol_version.path)
-    )
+    protocol_versions.first().map(|protocol_version| {
+      self
+        .service_endpoint
+        .replace("/.well-known/dspace-version", &protocol_version.path)
+    })
   }
 }
