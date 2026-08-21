@@ -3,7 +3,9 @@ mod errors;
 mod issuer_service_client;
 pub mod models;
 
-use crate::models::{DidWeb, Participant, ParticipantContext, RequestCredentialInformation};
+use crate::models::{
+  CreateParticipantResponse, DidWeb, Participant, ParticipantContext, RequestCredentialInformation,
+};
 pub use dataspace_service_client::DataspaceServiceClient;
 pub use errors::*;
 pub use issuer_service_client::IssuerServiceClient;
@@ -54,7 +56,10 @@ impl IdentityHubClient {
     Ok(response.json().await?)
   }
 
-  pub async fn create_participant(&self, participant_context: &ParticipantContext) -> Result<()> {
+  pub async fn create_participant(
+    &self,
+    participant_context: &ParticipantContext,
+  ) -> Result<CreateParticipantResponse> {
     let url = format!(
       "{}/api/identity/{}/participants",
       self.endpoint, self.version
@@ -70,7 +75,7 @@ impl IdentityHubClient {
     let response = request_builder.json(&participant_context).send().await?;
 
     if response.status().is_success() {
-      Ok(())
+      Ok(response.json::<CreateParticipantResponse>().await?)
     } else {
       Err(IdentityHubClientError::Response(response))
     }

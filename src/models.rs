@@ -1,4 +1,5 @@
 mod catalog_response;
+mod create_participant_response;
 mod credential;
 mod did_web;
 mod identity;
@@ -12,6 +13,7 @@ mod request_credentia_status;
 mod request_credential_body;
 
 pub use catalog_response::*;
+pub use create_participant_response::*;
 pub use credential::Credential;
 pub use did_web::*;
 pub use identity::*;
