@@ -3,7 +3,7 @@ pub type Result<T> = std::result::Result<T, IdentityHubClientError>;
 #[derive(Debug)]
 pub enum IdentityHubClientError {
   Reqwest(reqwest::Error),
-  Response(reqwest::Response),
+  Response(Box<reqwest::Response>),
 }
 
 impl From<reqwest::Error> for IdentityHubClientError {

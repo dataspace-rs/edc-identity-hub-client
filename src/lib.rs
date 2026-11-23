@@ -13,12 +13,16 @@ use std::fmt::Display;
 
 pub enum IdentityHubClientVersion {
   V1Alpha,
+  V1Beta,
+  V1,
 }
 
 impl Display for IdentityHubClientVersion {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
       IdentityHubClientVersion::V1Alpha => write!(f, "v1alpha"),
+      IdentityHubClientVersion::V1Beta => write!(f, "v1beta"),
+      IdentityHubClientVersion::V1 => write!(f, "v1"),
     }
   }
 }
@@ -77,7 +81,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json::<CreateParticipantResponse>().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -99,7 +103,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -121,7 +125,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -147,7 +151,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(())
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -169,7 +173,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -191,7 +195,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -217,7 +221,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(response.json().await?)
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -239,7 +243,7 @@ impl IdentityHubClient {
     if response.status().is_success() {
       Ok(())
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
@@ -265,7 +269,7 @@ impl IdentityHubClient {
     if !response.status().is_success() {
       Ok(())
     } else {
-      Err(IdentityHubClientError::Response(response))
+      Err(IdentityHubClientError::Response(Box::new(response)))
     }
   }
 
