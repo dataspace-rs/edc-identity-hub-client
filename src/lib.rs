@@ -11,6 +11,7 @@ pub use errors::*;
 pub use issuer_service_client::IssuerServiceClient;
 use std::fmt::Display;
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum IdentityHubClientVersion {
   V1Alpha,
   V1Beta,
