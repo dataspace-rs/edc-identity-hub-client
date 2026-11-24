@@ -28,7 +28,7 @@ pub struct CredentialClaims {
   pub id: String,
   pub issuance_date: DateTime<Utc>,
   pub expiration_date: DateTime<Utc>,
-  pub name: String,
+  pub name: Option<String>,
   pub description: Option<String>,
   pub r#type: Vec<String>,
   pub credential_subject: Vec<serde_json::Value>,
