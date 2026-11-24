@@ -10,6 +10,7 @@ pub use dataspace_service_client::DataspaceServiceClient;
 pub use errors::*;
 pub use issuer_service_client::IssuerServiceClient;
 use std::fmt::Display;
+use reqwest::Response;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum IdentityHubClientVersion {
@@ -79,11 +80,7 @@ impl IdentityHubClient {
 
     let response = request_builder.json(&participant_context).send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json::<CreateParticipantResponse>().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn get_participants(&self, offset: usize, limit: usize) -> Result<Vec<Participant>> {
@@ -101,11 +98,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn get_participant(&self, participant_context_id: &str) -> Result<Participant> {
@@ -123,11 +116,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn activate_participant(
@@ -149,11 +138,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(())
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_if_success(response)
   }
 
   pub async fn delete_participant(&self, participant_context_id: &str) -> Result<Participant> {
@@ -171,11 +156,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn get_credentials(&self, participant_id: &str) -> Result<Vec<models::Credential>> {
@@ -193,11 +174,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn get_credential(
@@ -219,11 +196,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(response.json().await?)
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_json_if_success(response).await
   }
 
   pub async fn delete_credential(&self, participant_id: &str, credential_id: &str) -> Result<()> {
@@ -241,11 +214,7 @@ impl IdentityHubClient {
 
     let response = request_builder.send().await?;
 
-    if response.status().is_success() {
-      Ok(())
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_if_success(response)
   }
 
   pub async fn request_verifiable_credential(
@@ -267,11 +236,7 @@ impl IdentityHubClient {
 
     let response = request_builder.json(request_credential_body).send().await?;
 
-    if !response.status().is_success() {
-      Ok(())
-    } else {
-      Err(IdentityHubClientError::Response(Box::new(response)))
-    }
+    Self::return_if_success(response)
   }
 
   pub async fn get_request_verifiable_credential_status(
@@ -293,5 +258,21 @@ impl IdentityHubClient {
     };
 
     Ok(request_builder.send().await?.json().await?)
+  }
+
+  fn return_if_success(response: Response) -> Result<()> {
+    if !response.status().is_success() {
+      Ok(())
+    } else {
+      Err(IdentityHubClientError::Response(Box::new(response)))
+    }
+  }
+
+  async fn return_json_if_success<T: serde::de::DeserializeOwned>(response: Response) -> Result<T> {
+    if !response.status().is_success() {
+      Ok(response.json().await?)
+    } else {
+      Err(IdentityHubClientError::Response(Box::new(response)))
+    }
   }
 }
