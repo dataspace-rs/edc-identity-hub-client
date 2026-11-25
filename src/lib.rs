@@ -261,7 +261,7 @@ impl IdentityHubClient {
   }
 
   fn return_if_success(response: Response) -> Result<()> {
-    if !response.status().is_success() {
+    if response.status().is_success() {
       Ok(())
     } else {
       Err(IdentityHubClientError::Response(Box::new(response)))
@@ -269,7 +269,7 @@ impl IdentityHubClient {
   }
 
   async fn return_json_if_success<T: serde::de::DeserializeOwned>(response: Response) -> Result<T> {
-    if !response.status().is_success() {
+    if response.status().is_success() {
       Ok(response.json().await?)
     } else {
       Err(IdentityHubClientError::Response(Box::new(response)))
